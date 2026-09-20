@@ -1105,7 +1105,7 @@ export default function NodePage() {
                   <h2 className="text-xl font-bold">确认删除</h2>
                 </ModalHeader>
                 <ModalBody>
-                  <p>确定要删除转发机 <strong>"{nodeToDelete?.name}"</strong> 吗？</p>
+                  <p>确定要删除转发机 <strong>&quot;{nodeToDelete?.name}&quot;</strong> 吗？</p>
                   <p className="text-small text-default-500">此操作不可恢复，请谨慎操作。</p>
                 </ModalBody>
                 <ModalFooter>

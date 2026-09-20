@@ -487,7 +487,7 @@ export default function LimitPage() {
                 </ModalHeader>
                 <ModalBody>
                   <p className="text-default-600">
-                    确定要删除限速规则 <span className="font-semibold text-foreground">"{ruleToDelete?.name}"</span> 吗？
+                    确定要删除限速规则 <span className="font-semibold text-foreground">&quot;{ruleToDelete?.name}&quot;</span> 吗？
                   </p>
                   <p className="text-small text-default-500 mt-2">
                     此操作无法撤销，删除后该规则将永久消失。

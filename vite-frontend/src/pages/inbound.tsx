@@ -53,6 +53,8 @@ export default function InboundPage() {
 
   // 「我自己用」:一键开给当前管理员自己,完事直接把订阅链接弹出来
   const [selfLoading, setSelfLoading] = useState<number | null>(null);
+  const [selfAssignOpen, setSelfAssignOpen] = useState(false);
+  const [selfAssignForm, setSelfAssignForm] = useState<any>({ nodeId: null, nodeName: "", publicPort: null });
   const [pushing, setPushing] = useState<number | null>(null);
   const [selfSubUrl, setSelfSubUrl] = useState<string>("");
   const [selfClashUrl, setSelfClashUrl] = useState<string>("");
@@ -63,11 +65,30 @@ export default function InboundPage() {
 
   const clashUrl = (token: string) => `${window.location.origin}/api/v1/open_api/clash?token=${token}`;
 
-  const handleAssignSelf = async (nodeId: number, nodeName?: string) => {
+  const openSelfAssign = (n: any) => {
+    setSelfAssignForm({ nodeId: n.id, nodeName: n.name, publicPort: null });
+    setSelfAssignOpen(true);
+  };
+
+  const handleAssignSelf = async () => {
+    const nodeId = selfAssignForm.nodeId;
+    if (!nodeId) return;
+    const payload: any = { nodeId };
+    const node = nodes.find((n) => n.id === nodeId);
+    if (selfAssignForm.publicPort !== null && selfAssignForm.publicPort !== "" && selfAssignForm.publicPort !== undefined) {
+      const publicPort = Number(selfAssignForm.publicPort);
+      const minPort = Number(node?.portSta) || 1;
+      const maxPort = Number(node?.portEnd) || 65535;
+      if (!Number.isInteger(publicPort) || publicPort < minPort || publicPort > maxPort) {
+        return toast.error(`公网端口必须在 ${minPort}-${maxPort} 范围内`);
+      }
+      payload.publicPort = publicPort;
+    }
+    setSelfAssignOpen(false);
     setSelfLoading(nodeId);
-    setSelfNodeName(nodeName || "");
+    setSelfNodeName(selfAssignForm.nodeName || "");
     try {
-      const res = await assignSelf({ nodeId });
+      const res = await assignSelf(payload);
       if (res.code === 0 && res.data?.subToken) {
         setSelfSubUrl(`${window.location.origin}/api/v1/open_api/sub?token=${res.data.subToken}`);
         setSelfClashUrl(clashUrl(res.data.subToken));
@@ -344,7 +365,7 @@ export default function InboundPage() {
                     color="success"
                     variant="flat"
                     isLoading={selfLoading === n.id}
-                    onPress={() => handleAssignSelf(n.id, n.name)}
+                    onPress={() => openSelfAssign(n)}
                   >
                     🔑 我自己用
                   </Button>
@@ -368,6 +389,31 @@ export default function InboundPage() {
       {machineNodes.length === 0 && (
         <div className="text-center text-default-400 py-8">还没有协议,点右上角「⚡ 一键搭建整机协议」在某台机器上把全套协议建出来</div>
       )}
+
+      {/* 「我自己用」:先选公网端口,再创建整机协议线路 */}
+      <Modal isOpen={selfAssignOpen} onClose={() => setSelfAssignOpen(false)}>
+        <ModalContent>
+          <ModalHeader>🔑 我自己用「{selfAssignForm.nodeName}」</ModalHeader>
+          <ModalBody className="space-y-3">
+            <div className="text-sm text-default-500">
+              给当前管理员开通这台机器的全部协议,不限速、不限流量、不到期。
+            </div>
+            <Input
+              type="number"
+              label="公网端口起始值(可空自动分配)"
+              value={selfAssignForm.publicPort ?? ""}
+              min={nodes.find((n) => n.id === selfAssignForm.nodeId)?.portSta ?? 1}
+              max={nodes.find((n) => n.id === selfAssignForm.nodeId)?.portEnd ?? 65535}
+              onChange={(e) => setSelfAssignForm({ ...selfAssignForm, publicPort: e.target.value ? Number(e.target.value) : null })}
+              description="多个协议会从该端口开始按序分配;留空则自动分配"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setSelfAssignOpen(false)}>取消</Button>
+            <Button color="success" isLoading={selfLoading === selfAssignForm.nodeId} onPress={handleAssignSelf}>确认开通</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* 「我自己用」结果:直接把订阅链接给出来,不用再去用户管理找 */}
       <Modal isOpen={selfOpen} onClose={() => setSelfOpen(false)} size="2xl">

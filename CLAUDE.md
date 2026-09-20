@@ -14,6 +14,15 @@ TMS 面板（代码内产品名 **Flux / flux-panel**）——一个翻墙协议
 
 > ⚠️ 本项目是翻墙工具，代码注释中大量使用「车友」「落地」「机场」等行话（「车友」= 订阅用户/客户，「落地」= 中转出口节点）。README 说明仅供个人学习研究，使用者自负合规风险。
 
+## 当前文档与验证基线（2026-09-20）
+
+- 理解项目时优先级为：当前代码 > `HANDOFF.md` > 本文件；`HANDOFF.md` 记录最近部署、发布和功能变更，本文件只保留长期架构约束。
+- 协议管理中的“分配用户”和“我自己用”都支持 `publicPort`：空值自动分配，填写后按起始端口、起始端口+1……分配整机协议；公网端口属于 `Forward.inPort`，不是 `Inbound.listenPort`。
+- 当前已验证：`cd vite-frontend && npx tsc --noEmit`、`npx eslint src`（0 error，仍有既有格式 warning）、`npm run build`、`cd go-gost && go test ./...` 均通过。项目仍没有业务自动化测试套件。
+- 面板安全更新必须保留 MySQL volume：允许 `docker compose down`，禁止未经明确授权执行 `docker compose down -v`；更新前应先导出数据库备份。更新应用镜像可使用 `docker compose up -d --no-deps backend frontend`，避免重建数据库。
+- Android/iOS 是 WebView 壳；当前源码没有稳定的 `vite-frontend/dist` 到 Android assets/iOS Bundle 的自动拷贝链路，移动端 clean checkout 构建前必须先确认资源打包流程。
+- 当前已知安全薄弱点仍未全部修复：无盐 MD5、节点 secret 放在 query 参数、明文 HTTP 上报、全开放 CORS、用户列表可能返回 `pwd`、默认管理员凭据等。修改这些问题前必须评估 Java/Go/部署端兼容性。
+
 ## 部署架构
 
 | 角色 | 部署方式 | 组件 |

@@ -881,21 +881,37 @@ export default function DashboardPage() {
                             <div>
                               <h4 className="font-medium text-foreground text-sm mb-2 truncate">{forward.name}</h4>
                               <div className="space-y-1">
-                                <code 
+                                <button
+                                  type="button"
                                   className={`block px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 rounded font-mono text-xs truncate ${hasMultipleIps(forward.inIp) ? 'cursor-pointer hover:bg-green-200 dark:hover:bg-green-500/30' : ''}`}
+                                  tabIndex={0}
                                   onClick={() => hasMultipleIps(forward.inIp) && showAddressModal(forward.inIp, forward.inPort, '入口地址')}
+                                  onKeyDown={(e) => {
+                                    if ((e.key === 'Enter' || e.key === ' ') && hasMultipleIps(forward.inIp)) {
+                                      e.preventDefault();
+                                      showAddressModal(forward.inIp, forward.inPort, '入口地址');
+                                    }
+                                  }}
                                   title={formatInAddress(forward.inIp, forward.inPort)}
                                 >
                                   {formatInAddress(forward.inIp, forward.inPort)}
-                                </code>
+                                </button>
                                 <div className="text-center text-default-400 text-xs">↓</div>
-                                <code 
+                                <button
+                                  type="button"
                                   className={`block px-2 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 rounded font-mono text-xs truncate ${hasMultipleRemoteAddresses(forward.remoteAddr) ? 'cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-500/30' : ''}`}
+                                  tabIndex={0}
                                   onClick={() => hasMultipleRemoteAddresses(forward.remoteAddr) && showRemoteAddressModal(forward.remoteAddr, '出口地址')}
+                                  onKeyDown={(e) => {
+                                    if ((e.key === 'Enter' || e.key === ' ') && hasMultipleRemoteAddresses(forward.remoteAddr)) {
+                                      e.preventDefault();
+                                      showRemoteAddressModal(forward.remoteAddr, '出口地址');
+                                    }
+                                  }}
                                   title={formatRemoteAddress(forward.remoteAddr)}
                                 >
                                   {formatRemoteAddress(forward.remoteAddr)}
-                                </code>
+                                </button>
                               </div>
                             </div>
                             
