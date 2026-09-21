@@ -316,7 +316,30 @@ public class InboundServiceImpl extends ServiceImpl<InboundMapper, Inbound> impl
         for (Inbound in : inbounds) {
             deleteInbound(in.getId());
         }
+        cleanupAutoPortForwardTunnel(nodeId);
         return R.ok();
+    }
+
+    /** 清理协议自动创建、且已经没有转发使用的端口转发隧道。 */
+    private void cleanupAutoPortForwardTunnel(Long nodeId) {
+        if (nodeId == null) {
+            return;
+        }
+        String name = "inbound-tunnel-node" + nodeId;
+        Tunnel tunnel = tunnelMapper.selectOne(new QueryWrapper<Tunnel>()
+                .eq("in_node_id", nodeId)
+                .eq("type", TUNNEL_TYPE_PORT_FORWARD)
+                .eq("name", name)
+                .last("limit 1"));
+        if (tunnel == null) {
+            return;
+        }
+        long forwardCount = forwardMapper.selectCount(
+                new QueryWrapper<Forward>().eq("tunnel_id", tunnel.getId()));
+        if (forwardCount == 0) {
+            // TunnelService 会再次检查用户权限等引用，避免误删被其它业务占用的隧道。
+            tunnelService.deleteTunnel(tunnel.getId());
+        }
     }
 
     /** SS-2022 密钥:32 字节随机 → 标准 base64(带 padding),sing-box 的 password 要这个格式 */
@@ -350,6 +373,7 @@ public class InboundServiceImpl extends ServiceImpl<InboundMapper, Inbound> impl
         }
         this.removeById(id);
         pushNodeSingbox(in.getNodeId());
+        cleanupAutoPortForwardTunnel(in.getNodeId());
         return R.ok();
     }
 

@@ -710,23 +710,20 @@ export default function NodePage() {
                           首次建协议时会现下约 57MB,一般 1-2 分钟,装好自动恢复。
                         </div>
                       </div>
-                    ) : (
+                    ) : node.singboxInstallErr ? (
                       <div className="mb-3 rounded-lg border border-danger/40 bg-danger/10 px-2.5 py-2">
                         <div className="text-xs font-semibold text-danger">
-                          <span className="flex items-center gap-1"><UiIcon name="warning" size={14} /> sing-box {node.singboxInstallErr ? '安装失败' : '未运行'}</span>
+                          <span className="flex items-center gap-1"><UiIcon name="warning" size={14} /> sing-box 安装失败</span>
                         </div>
                         <div className="text-[11px] text-default-500 mt-0.5 leading-relaxed">
-                          {node.singboxInstallErr ? (
-                            <>这台机上的协议全部不可用。节点报的原因:<code className="font-mono break-all">{node.singboxInstallErr}</code>
-                            。多半是下载 GitHub 失败,国内机改用镜像版命令重跑节点安装脚本。</>
-                          ) : node.singboxInstalled === false ? (
-                            <>这台机上的协议全部不可用。<span className="text-danger">sing-box 没装上</span>(装节点时下载 GitHub 失败,
-                            国内机常见)—— 在这台机器上重跑一次节点安装脚本即可。</>
-                          ) : (
-                            <>这台机上的协议全部不可用。先确认节点服务已启动：systemd 用 <code className="font-mono">systemctl enable --now sing-box</code>，
-                            OpenRC 用 <code className="font-mono">rc-service sing-box start</code>，SysV 用 <code className="font-mono">service sing-box start</code>。
-                            若服务不存在,说明没装上,重跑节点安装脚本。</>
-                          )}
+                          这台机上的协议暂时不可用。节点报的原因:<code className="font-mono break-all">{node.singboxInstallErr}</code>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mb-3 rounded-lg border border-default-300 bg-default-100 px-2.5 py-2">
+                        <div className="text-xs font-medium text-default-600 flex items-center gap-1"><UiIcon name="refresh" size={14} /> sing-box 正在启动,等待节点状态同步</div>
+                        <div className="text-[11px] text-default-500 mt-0.5 leading-relaxed">
+                          配置已经下发,节点通常会在几秒内恢复;如果持续显示,再检查节点服务。
                         </div>
                       </div>
                     )

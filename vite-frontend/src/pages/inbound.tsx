@@ -327,24 +327,11 @@ export default function InboundPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 space-y-1">
-                      <div className="text-sm font-semibold text-danger flex items-center gap-1"><UiIcon name="warning" size={16} /> sing-box 未运行,这台机的协议全部不可用</div>
-                      {n.singboxInstalled === false ? (
-                        <div className="text-xs text-default-500">
-                          这台机上<span className="text-danger font-medium">根本没装 sing-box</span> —— 装节点时从 GitHub
-                          下载失败了(国内机常见)。到这台机上重跑一次节点安装脚本即可,装好后面板会自动把协议配置推下去,
-                          不用重新分配。
-                        </div>
-                      ) : (
-                        <div className="text-xs text-default-500">
-                          节点本身在线(gost 正常),但跑协议的 sing-box 没起来。到这台机上执行:
-                          <code className="font-mono bg-default-200 px-1 rounded ml-1">systemctl enable --now sing-box</code>；OpenRC 用 <code className="font-mono bg-default-200 px-1 rounded ml-1">rc-service sing-box start</code>；SysV 用 <code className="font-mono bg-default-200 px-1 rounded ml-1">service sing-box start</code>
-                          <div className="mt-1">
-                            若报 <code className="font-mono">Unit file sing-box.service does not exist</code>,说明根本没装上
-                            (下载 GitHub 失败),重跑一次节点安装脚本即可。
-                          </div>
-                        </div>
-                      )}
+                    <div className="rounded-lg border border-default-300 bg-default-100 px-3 py-2 space-y-1">
+                      <div className="text-sm font-medium text-default-600 flex items-center gap-1"><UiIcon name="refresh" size={16} /> sing-box 正在启动,等待节点状态同步</div>
+                      <div className="text-xs text-default-500">
+                        配置已经下发,节点通常会在几秒内恢复;如果持续显示,再检查节点服务。
+                      </div>
                     </div>
                   )
                 )}
