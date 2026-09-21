@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概览
 
-TMS 面板（代码内产品名 **Flux / flux-panel**）——一个翻墙协议管理 / 转发中转 / 每用户限速·流量·到期的中央管理面板。架构是「一台中央面板 + 多台转发机（节点机）」：
+NDE Panel（兼容标识仍包含 TMS / Flux）——一个翻墙协议管理 / 转发中转 / 每用户限速·流量·到期的中央管理面板。架构是「一台中央面板 + 多台转发机（节点机）」：
 
 - **springboot-backend/**：Spring Boot 2.7.18 (Java 21) 中央面板后端，端口 **6365**，API 前缀 `/api/v1`，管理所有节点
 - **vite-frontend/**：React 18 + TypeScript + HeroUI 前端（PC 侧栏 + H5 底栏双布局）

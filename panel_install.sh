@@ -191,7 +191,7 @@ configure_docker_ipv6() {
 # 显示菜单
 show_menu() {
   echo "==============================================="
-  echo "          TMS 面板管理菜单"
+  echo "          NDE Panel 管理菜单"
   echo "==============================================="
   echo "  1. 安装面板"
   echo "  2. 更新面板"
@@ -227,7 +227,7 @@ print_access_box() {
   local ip="$1" fport="$2"
   echo ""
   echo "╔══════════════════════════════════════════════════════╗"
-  echo "║              TMS 面板安装完成                        ║"
+  echo "║              NDE Panel 安装完成                        ║"
   echo "╚══════════════════════════════════════════════════════╝"
   echo ""
   echo "    访问地址 :  http://${ip}:${fport}"
@@ -274,7 +274,7 @@ EOF
 
 # 查看运行状态
 show_status() {
-  echo "📊 TMS 面板容器状态:"
+  echo "📊 NDE Panel 容器状态:"
   docker ps -a --filter "name=gost-mysql" --filter "name=springboot-backend" --filter "name=vite-frontend" \
     --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || docker ps -a
 }
@@ -332,7 +332,7 @@ is_tms_compose() {
 }
 
 purge_panel() {
-  echo "🧨 彻底清理 TMS 面板(删除所有容器/镜像/数据卷/网络/配置和 tms 管理命令)..."
+  echo "🧨 彻底清理 NDE Panel(删除所有容器/镜像/数据卷/网络/配置和 tms 管理命令)..."
 
   # 用 curl 一键跑 purge 时,当前目录多半不是面板安装目录 —— 那样容器能清掉,
   # 但 docker-compose.yml / .env / gost.sql 这些会原地留下,下次安装还会被复用。
@@ -345,8 +345,8 @@ purge_panel() {
   fi
 
   if [ -f docker-compose.yml ] && ! is_tms_compose; then
-    echo "⚠️  当前目录的 docker-compose.yml 不是 TMS 的,已跳过 compose 清理和配置文件删除,"
-    echo "    只按名字清 TMS 自己的容器/镜像。要清面板请先 cd 到面板安装目录。"
+    echo "⚠️  当前目录的 docker-compose.yml 不是 NDE Panel 的,已跳过 compose 清理和配置文件删除,"
+    echo "    只按名字清 NDE Panel 自己的容器/镜像。要清面板请先 cd 到面板安装目录。"
   fi
   if command -v docker &> /dev/null; then
     # 有 compose 就先规范地 down 一把(确认是 TMS 的才动)

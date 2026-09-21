@@ -10,7 +10,7 @@ const APP_VERSION = "1.0.1";
 const getInitialConfig = () => {
   if (typeof window === 'undefined') {
     return {
-      name: "TMS",
+      name: "NDE Panel",
       version: VERSION,
       app_version: APP_VERSION,
     };
@@ -25,7 +25,7 @@ const getInitialConfig = () => {
       };
     }
   return {
-    name: "TMS",
+    name: "NDE Panel",
     version: VERSION,
     app_version: APP_VERSION,
   };

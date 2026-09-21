@@ -48,7 +48,7 @@ cmd_update() {
 # 刻意不调 need_panel —— 卸载正是在「面板已经不完整」时最需要能用,
 # 再加一道「必须像面板目录」的检查,就成了装坏了反而卸不掉的死锁。
 cmd_purge() {
-  echo "🧨 彻底清理 TMS 面板(合体 / 源码版)"
+  echo "🧨 彻底清理 NDE Panel(合体 / 源码版)"
   echo "   会删除:容器、本地构建的镜像、数据卷(含数据库数据)、网络、tms 命令"
   read -rp "确认吗? (y/N): " c
   if [ "$c" != "y" ] && [ "$c" != "Y" ]; then
@@ -124,7 +124,7 @@ cmd_menu() {
   while true; do
     echo ""
     echo "=============================="
-    echo "     TMS 面板管理菜单"
+    echo "     NDE Panel 管理菜单"
     echo "  目录: $PANEL_DIR"
     echo "=============================="
     echo " 1) 更新面板(拉代码 + 重新构建)"

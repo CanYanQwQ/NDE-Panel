@@ -1,0 +1,15 @@
+NDE Panel
+
+Copyright 2026 CanYanQwQ for the original modifications and additions maintained in this repository.
+
+NDE Panel is a modified derivative of the upstream TMS project:
+https://github.com/Teminuosi/Tms
+
+This repository may contain original upstream code, third-party components, and subsequent modifications. Upstream copyright, license, attribution, and modification notices must be retained when redistributing the project or derivative works.
+
+The project is distributed under the Apache License, Version 2.0. See LICENSE for the complete license text.
+
+The current project repository is:
+https://github.com/CanYanQwQ/NDE-Panel
+
+The names "TMS", "tms", "Flux", and legacy package/container/database identifiers may remain in compatibility-sensitive parts of the project. Their presence does not change the attribution or licensing of the upstream work.
