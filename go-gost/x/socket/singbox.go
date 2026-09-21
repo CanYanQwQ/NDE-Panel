@@ -664,6 +664,9 @@ func reloadSingbox() error {
 		if err := ensureNativeSingboxService(manager); err != nil {
 			return err
 		}
+		// OpenRC/SysV 的 start 在服务已运行时不会重新读取配置；先停掉 supervisor，
+		// 再启动它，确保 SetSingboxConfig 后新 UUID/Reality 参数真正生效。
+		_ = stopNativeService(manager, "sing-box")
 		return startNativeService(manager, "sing-box")
 	default:
 		fmt.Println("⚠️ 未检测到服务管理器，sing-box 仅在当前启动周期运行；容器请使用节点 entrypoint/supervisor。")

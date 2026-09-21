@@ -24,6 +24,7 @@ import {
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { SNI_PRESETS, DEFAULT_SNI, cleanSni } from "@/config/sni";
 import { SubQr } from "@/components/sub-qr";
+import { UiIcon } from "@/components/ui-icon";
 
 /**
  * 协议管理(合体面板)· 机器卡模式。
@@ -273,7 +274,7 @@ export default function InboundPage() {
               setOneClickOpen(true);
             }}
           >
-            ⚡ 一键搭建整机协议
+            <><UiIcon name="zap" size={16} /> 一键搭建整机协议</>
           </Button>
           <Button
             color="primary"
@@ -298,7 +299,7 @@ export default function InboundPage() {
             <Card key={n.id}>
               <CardBody className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-semibold truncate">🖥️ {n.name}</span>
+                  <span className="text-lg font-semibold truncate flex items-center gap-2"><UiIcon name="server" size={20} /> {n.name}</span>
                   <Chip size="sm" variant="flat" color={online ? "success" : "default"}>{online ? "在线" : "离线"}</Chip>
                   <Chip size="sm" variant="flat" color="primary" className="ml-auto">{nodeInbounds.length} 协议</Chip>
                 </div>
@@ -310,14 +311,14 @@ export default function InboundPage() {
                 {online && n.singboxRunning === false && nodeInbounds.length > 0 && (
                   n.singboxInstalling ? (
                     <div className="rounded-lg border border-default-300 bg-default-100 px-3 py-2 space-y-1">
-                      <div className="text-sm font-medium text-default-600">⏳ sing-box 正在安装,请稍候…</div>
+                      <div className="text-sm font-medium text-default-600"><UiIcon name="refresh" size={16} /> sing-box 正在安装,请稍候…</div>
                       <div className="text-xs text-default-500">
                         首次建协议时会现下 sing-box(约 57MB),一般 1-2 分钟。装好后这里自动恢复正常,不用管。
                       </div>
                     </div>
                   ) : n.singboxInstallErr ? (
                     <div className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 space-y-1">
-                      <div className="text-sm font-semibold text-danger">⚠️ sing-box 安装失败,这台机的协议全部不可用</div>
+                      <div className="text-sm font-semibold text-danger flex items-center gap-1"><UiIcon name="warning" size={16} /> sing-box 安装失败,这台机的协议全部不可用</div>
                       <div className="text-xs text-default-500 break-all">
                         节点报的原因:<code className="font-mono">{n.singboxInstallErr}</code>
                       </div>
@@ -327,7 +328,7 @@ export default function InboundPage() {
                     </div>
                   ) : (
                     <div className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 space-y-1">
-                      <div className="text-sm font-semibold text-danger">⚠️ sing-box 未运行,这台机的协议全部不可用</div>
+                      <div className="text-sm font-semibold text-danger flex items-center gap-1"><UiIcon name="warning" size={16} /> sing-box 未运行,这台机的协议全部不可用</div>
                       {n.singboxInstalled === false ? (
                         <div className="text-xs text-default-500">
                           这台机上<span className="text-danger font-medium">根本没装 sing-box</span> —— 装节点时从 GitHub
@@ -357,7 +358,7 @@ export default function InboundPage() {
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" color="primary" className="flex-1" onPress={() => openNodeAssign(n, nodeInbounds.length)}>
-                    👤 分配用户
+                    <><UiIcon name="users" size={15} /> 分配用户</>
                   </Button>
                   {/* 自己用不必先建车友再分配:一键开给当前管理员,不限速不限量不到期 */}
                   <Button
@@ -367,7 +368,7 @@ export default function InboundPage() {
                     isLoading={selfLoading === n.id}
                     onPress={() => openSelfAssign(n)}
                   >
-                    🔑 我自己用
+                    <><UiIcon name="key" size={15} /> 我自己用</>
                   </Button>
                   <Button
                     size="sm"
@@ -375,7 +376,7 @@ export default function InboundPage() {
                     isLoading={pushing === n.id}
                     onPress={() => handlePushConfig(n.id, n.name)}
                   >
-                    🔄 重推配置
+                    <><UiIcon name="refresh" size={15} /> 重推配置</>
                   </Button>
                   <Button size="sm" color="danger" variant="flat" onPress={() => handleClearNode(n.id, n.name)}>
                     清空该机
@@ -387,13 +388,13 @@ export default function InboundPage() {
         })}
       </div>
       {machineNodes.length === 0 && (
-        <div className="text-center text-default-400 py-8">还没有协议,点右上角「⚡ 一键搭建整机协议」在某台机器上把全套协议建出来</div>
+        <div className="text-center text-default-400 py-8">还没有协议,点右上角「一键搭建整机协议」在某台机器上把全套协议建出来</div>
       )}
 
       {/* 「我自己用」:先选公网端口,再创建整机协议线路 */}
       <Modal isOpen={selfAssignOpen} onClose={() => setSelfAssignOpen(false)}>
         <ModalContent>
-          <ModalHeader>🔑 我自己用「{selfAssignForm.nodeName}」</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="key" size={18} /> 我自己用「{selfAssignForm.nodeName}」</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-sm text-default-500">
               给当前管理员开通这台机器的全部协议,不限速、不限流量、不到期。
@@ -419,7 +420,7 @@ export default function InboundPage() {
       <Modal isOpen={selfOpen} onClose={() => setSelfOpen(false)} size="2xl">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            <span>🔑 已开给你自己(不限速 · 不限流量 · 不限到期)</span>
+            <span className="flex items-center gap-2"><UiIcon name="key" size={18} /> 已开给你自己(不限速 · 不限流量 · 不限到期)</span>
             {selfNodeName && (
               <span className="text-sm font-normal text-default-500">
                 机器:<b className="text-foreground">{selfNodeName}</b>
@@ -431,7 +432,7 @@ export default function InboundPage() {
               这条订阅是给你自己用的,复制到 v2rayN / 小火箭 里就能用。以后随时在「我的订阅」页也能找到。
             </div>
             <div className="text-xs text-default-400 bg-default-100 rounded-lg px-3 py-2">
-              💡 链接前半段是<b>面板地址</b>,所以每台机器点出来都一样 —— 真正区分线路的是末尾的
+              <UiIcon name="info" size={15} /> 链接前半段是<b>面板地址</b>,所以每台机器点出来都一样 —— 真正区分线路的是末尾的
               <b> token</b>。拉下来的节点才是这台机器的。
             </div>
             <Input
@@ -470,10 +471,10 @@ export default function InboundPage() {
       {/* 机器卡「分配用户」:整机协议一次分给车友,出一条订阅链接 */}
       <Modal isOpen={assignOpen} onClose={() => setAssignOpen(false)}>
         <ModalContent>
-          <ModalHeader>👤 给车友分配「{assignForm.nodeName}」</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="users" size={18} /> 给车友分配「{assignForm.nodeName}」</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-sm text-default-500">
-              把这台机器上的 <b>{assignForm.protocolCount} 个协议</b> 一次分给车友。分配完到「用户管理」页,点该车友的「🔗 订阅链接」拿链接发给他。
+              把这台机器上的 <b>{assignForm.protocolCount} 个协议</b> 一次分给车友。分配完到「用户管理」页,点该车友的「订阅链接」拿链接发给他。
             </div>
             <Select
               label="子账号(车友)"
@@ -529,7 +530,7 @@ export default function InboundPage() {
       {/* 一键搭建整机协议:选机器,把所有支持的协议一键全建出来 */}
       <Modal isOpen={oneClickOpen} onClose={() => setOneClickOpen(false)}>
         <ModalContent>
-          <ModalHeader>⚡ 一键搭建整机协议</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="zap" size={18} /> 一键搭建整机协议</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-sm text-default-500">
               在选中的机器上一键建好全部协议:<b>VLESS-Reality、Trojan-Reality、VMess、Hysteria2、TUIC、AnyTLS</b>(端口、密钥、自签证书全自动;端口被占自动上移)。建好后就是一张机器卡,点「分配用户」出订阅即可。

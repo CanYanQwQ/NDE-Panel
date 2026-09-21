@@ -16,6 +16,7 @@ import {
   getNodeList,
 } from "@/api";
 import { copyTextToClipboard } from "@/utils/clipboard";
+import { UiIcon } from "@/components/ui-icon";
 
 /**
  * 落地管理。
@@ -151,7 +152,7 @@ export default function LandingPage() {
       } else if (form.id && res.msg && res.msg.startsWith("落地已改")) {
         // 后端这条是【半成功】:库已经改完,只是有机器没推上(多半离线)。
         // 当成失败会更糟 —— 弹窗不关、列表不刷新,用户会以为改动没保存、再改一遍。
-        toast(res.msg, { icon: "⚠️", duration: 8000 });
+        toast(res.msg, { icon: <UiIcon name="warning" size={16} />, duration: 8000 });
         finishSave();
       } else {
         toast.error(res.msg || "保存失败");
@@ -205,7 +206,7 @@ export default function LandingPage() {
     <div className="p-4 space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold">落地管理</h1>
-        <Button color="warning" onPress={openCreate}>➕ 新建落地</Button>
+        <Button color="warning" onPress={openCreate}><UiIcon name="plus" size={16} /> 新建落地</Button>
       </div>
 
       <div className="text-xs text-default-500">
@@ -225,7 +226,7 @@ export default function LandingPage() {
               <Card key={l.id}>
                 <CardBody className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-semibold truncate">🌐 {l.name}</span>
+                    <span className="text-lg font-semibold truncate flex items-center gap-2"><UiIcon name="globe" size={20} /> {l.name}</span>
                     <Chip size="sm" variant="flat" color={typeColor(l.type) as any}>{l.type}</Chip>
                     <Chip
                       size="sm"
@@ -251,7 +252,7 @@ export default function LandingPage() {
                           : toast.error("复制失败");
                       }}
                     >
-                      📋
+                      <UiIcon name="clipboard" size={16} aria-label="复制落地出口" />
                     </Button>
                   </div>
 
@@ -271,16 +272,16 @@ export default function LandingPage() {
                       {r.skipped ? (
                         <span className="text-default-500">{r.msg}</span>
                       ) : r.ok ? (
-                        <span className="text-success">✅ 通了 · 出口 IP <b className="font-mono">{r.exitIp}</b> · {r.latencyMs}ms · 经 {r.via}</span>
+                        <span className="text-success flex items-center gap-1"><UiIcon name="check" size={14} /> 通了 · 出口 IP <b className="font-mono">{r.exitIp}</b> · {r.latencyMs}ms · 经 {r.via}</span>
                       ) : (
-                        <span className="text-danger">❌ {r.msg || "不通"}(经 {r.via})</span>
+                        <span className="text-danger flex items-center gap-1"><UiIcon name="x" size={14} /> {r.msg || "不通"}(经 {r.via})</span>
                       )}
                     </div>
                   )}
 
                   <div className="flex gap-2">
                     <Button size="sm" color="primary" variant="flat" className="flex-1" onPress={() => openEdit(l)}>
-                      ✏️ 编辑
+                      <><UiIcon name="edit" size={15} /> 编辑</>
                     </Button>
                     <Button
                       size="sm"
@@ -289,7 +290,7 @@ export default function LandingPage() {
                       isLoading={rowTesting === l.id}
                       onPress={() => handleRowTest(l)}
                     >
-                      🔌 测一下
+                      <><UiIcon name="plug" size={15} /> 测一下</>
                     </Button>
                     <Button size="sm" color="danger" variant="flat" onPress={() => handleDelete(l)}>
                       删除
@@ -304,18 +305,18 @@ export default function LandingPage() {
 
       {!loading && landings.length === 0 && (
         <div className="text-center text-default-400 py-8">
-          还没有落地。点右上角「➕ 新建落地」建一条,再去「中转」页把它挂到前置机上。
+          还没有落地。点右上角「新建落地」建一条,再去「中转」页把它挂到前置机上。
         </div>
       )}
 
       {/* 新建 / 编辑 */}
       <Modal isOpen={open} onClose={() => setOpen(false)} size="2xl">
         <ModalContent>
-          <ModalHeader>{form.id ? `✏️ 编辑落地` : "➕ 新建落地"}</ModalHeader>
+          <ModalHeader className="flex items-center gap-2">{form.id ? <><UiIcon name="edit" size={18} /> 编辑落地</> : <><UiIcon name="plus" size={18} /> 新建落地</>}</ModalHeader>
           <ModalBody className="space-y-3">
             {form.id && usageOf(form.id).nodeIds.length > 0 && (
               <div className="text-xs bg-warning-50 text-warning-700 dark:bg-warning-100/10 dark:text-warning-500 rounded-lg px-3 py-2">
-                ⚠️ 这条落地正在被 <b>{usageOf(form.id).nodeIds.map(nodeName).join("、")}</b> 使用。
+                <UiIcon name="warning" size={15} /> 这条落地正在被 <b>{usageOf(form.id).nodeIds.map(nodeName).join("、")}</b> 使用。
                 保存后会立刻给这些机器重推配置,出口 IP 当场就变 ——
                 车友的订阅链接、UUID、端口都不变,不用重新发订阅。
               </div>
@@ -351,7 +352,7 @@ export default function LandingPage() {
                 {nodes.map((n) => (<SelectItem key={n.id}>{n.name}</SelectItem>))}
               </Select>
               <Button size="sm" variant="flat" color="secondary" isLoading={testLoading} onPress={handleTest}>
-                🔌 测试落地
+                <><UiIcon name="plug" size={15} /> 测试落地</>
               </Button>
             </div>
             {testResult && (
@@ -359,9 +360,9 @@ export default function LandingPage() {
                 {testResult.skipped ? (
                   <span className="text-default-500">{testResult.msg}</span>
                 ) : testResult.ok ? (
-                  <span className="text-success">✅ 通了 · 出口 IP <b className="font-mono">{testResult.exitIp}</b> · {testResult.latencyMs}ms</span>
+                  <span className="text-success flex items-center gap-1"><UiIcon name="check" size={14} /> 通了 · 出口 IP <b className="font-mono">{testResult.exitIp}</b> · {testResult.latencyMs}ms</span>
                 ) : (
-                  <span className="text-danger">❌ {testResult.msg || "不通"}</span>
+                  <span className="text-danger flex items-center gap-1"><UiIcon name="x" size={14} /> {testResult.msg || "不通"}</span>
                 )}
               </div>
             )}

@@ -9,6 +9,7 @@ import { Spinner } from "@heroui/spinner";
 import { Divider } from "@heroui/divider";
 import { Alert } from "@heroui/alert";
 import toast from 'react-hot-toast';
+import { UiIcon } from "@/components/ui-icon";
 
 
 import { 
@@ -406,12 +407,12 @@ export default function TunnelPage() {
   const getQualityDisplay = (averageTime?: number, packetLoss?: number) => {
     if (averageTime === undefined || packetLoss === undefined) return null;
     
-    if (averageTime < 30 && packetLoss === 0) return { text: '🚀 优秀', color: 'success' };
-    if (averageTime < 50 && packetLoss === 0) return { text: '✨ 很好', color: 'success' };
-    if (averageTime < 100 && packetLoss < 1) return { text: '👍 良好', color: 'primary' };
-    if (averageTime < 150 && packetLoss < 2) return { text: '😐 一般', color: 'warning' };
-    if (averageTime < 200 && packetLoss < 5) return { text: '😟 较差', color: 'warning' };
-    return { text: '😵 很差', color: 'danger' };
+    if (averageTime < 30 && packetLoss === 0) return { text: '优秀', icon: 'zap' as const, color: 'success' };
+    if (averageTime < 50 && packetLoss === 0) return { text: '很好', icon: 'check' as const, color: 'success' };
+    if (averageTime < 100 && packetLoss < 1) return { text: '良好', icon: 'info' as const, color: 'primary' };
+    if (averageTime < 150 && packetLoss < 2) return { text: '一般', icon: 'warning' as const, color: 'warning' };
+    if (averageTime < 200 && packetLoss < 5) return { text: '较差', icon: 'warning' as const, color: 'warning' };
+    return { text: '很差', icon: 'x' as const, color: 'danger' };
   };
 
   if (loading) {
@@ -988,7 +989,7 @@ export default function TunnelPage() {
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                     result.success ? 'bg-success text-white' : 'bg-danger text-white'
                                   }`}>
-                                    {result.success ? '✓' : '✗'}
+                                    {result.success ? <UiIcon name="check" size={14} /> : <UiIcon name="x" size={14} />}
                                   </div>
                                   <div>
                                     <h4 className="font-semibold">{result.description}</h4>
@@ -1019,7 +1020,7 @@ export default function TunnelPage() {
                                       {quality && (
                                         <>
                                           <Chip color={quality.color as any} variant="flat" size="lg">
-                                            {quality.text}
+                                            <span className="flex items-center gap-1"><UiIcon name={quality.icon} size={16} /> {quality.text}</span>
                                           </Chip>
                                           <div className="text-small text-default-500 mt-1">连接质量</div>
                                         </>

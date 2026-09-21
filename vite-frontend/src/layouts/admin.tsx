@@ -8,10 +8,11 @@ import { toast } from 'react-hot-toast';
 import { copyTextToClipboard } from '@/utils/clipboard';
 
 import { Logo } from '@/components/icons';
+import { UiIcon, UiIconName } from '@/components/ui-icon';
 import { updatePassword, getVersionInfo } from '@/api';
 import { safeLogout } from '@/utils/logout';
 import { siteConfig, SITE_CONFIG_UPDATED } from '@/config/site';
-import SkinPicker from '@/components/skin-picker';
+import { isAdmin as getIsAdmin } from '@/utils/auth';
 
 interface MenuItem {
   path: string;
@@ -20,6 +21,13 @@ interface MenuItem {
   adminOnly?: boolean;
   /** 只给子账号(车友)看:管理员不显示,避免和管理页重复 */
   userOnly?: boolean;
+}
+
+interface MenuGroup {
+  id: string;
+  label: string;
+  icon: UiIconName;
+  paths: string[];
 }
 
 interface PasswordForm {
@@ -42,6 +50,14 @@ export default function AdminLayout({
 
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    overview: true,
+    machines: true,
+    users: true,
+    protocol: true,
+    system: true,
+  });
   const [username, setUsername] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   // 面板名:先用本地值渲染,后台校验到新名字时(SITE_CONFIG_UPDATED)实时刷新,
@@ -196,26 +212,26 @@ export default function AdminLayout({
     }
   ];
 
-  // 侧栏显示顺序(改这一行就能调顺序,不用挪上面那些带图标的大块)
-  const MENU_ORDER = [
-    '/dashboard',   // 0 仪表板
-    '/my-sub',      // 车友专属,管理员看不到
-    '/node',        // 1 转发机
-    '/inbound',     // 2 协议管理
-    '/relay',       // 3 中转
-    '/landing',     // 3.5 落地(紧挨中转:搭完中转要改出口就来这)
-    '/user',        // 4 用户
-    '/limit',       // 5 限速
-    '/tunnel',      // 6 隧道
-    '/forward',     // 7 转发
-    '/config',
-    '/guide',
+  const menuGroups: MenuGroup[] = [
+    { id: 'overview', label: '概览', icon: 'dashboard', paths: ['/dashboard'] },
+    { id: 'machines', label: '机器管理', icon: 'server', paths: ['/node', '/landing'] },
+    { id: 'users', label: '用户与订阅', icon: 'users', paths: ['/user', '/my-sub'] },
+    { id: 'protocol', label: '协议', icon: 'protocol', paths: ['/inbound', '/relay', '/tunnel', '/forward', '/limit'] },
+    { id: 'system', label: '系统', icon: 'settings', paths: ['/config', '/guide'] },
   ];
-  menuItems.sort((a, b) => {
-    const ia = MENU_ORDER.indexOf(a.path);
-    const ib = MENU_ORDER.indexOf(b.path);
-    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
-  });
+
+  const filteredMenuItems = menuItems.filter(item =>
+    (!item.adminOnly || isAdmin) && (!item.userOnly || !isAdmin)
+  );
+
+  const visibleMenuGroups = menuGroups
+    .map((group) => ({
+      ...group,
+      items: group.paths
+        .map((path) => filteredMenuItems.find((item) => item.path === path))
+        .filter((item): item is MenuItem => Boolean(item)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   // 检查移动端
   const checkMobile = () => {
@@ -229,15 +245,7 @@ export default function AdminLayout({
     // 获取用户信息
     const name = localStorage.getItem('name') || 'Admin';
     
-    // 兼容处理：如果没有admin字段，根据role_id判断（0为管理员）
-    let adminFlag = localStorage.getItem('admin') === 'true';
-    if (localStorage.getItem('admin') === null) {
-      const roleId = parseInt(localStorage.getItem('role_id') || '1', 10);
-      adminFlag = roleId === 0;
-      // 补充设置admin字段，避免下次再次判断
-      localStorage.setItem('admin', adminFlag.toString());
-    }
-    
+    const adminFlag = getIsAdmin();
     setUsername(name);
     setIsAdmin(adminFlag);
 
@@ -335,11 +343,6 @@ export default function AdminLayout({
     });
   };
 
-  // 过滤菜单项（根据权限）:adminOnly 只给管理员,userOnly 只给车友
-  const filteredMenuItems = menuItems.filter(item =>
-    (!item.adminOnly || isAdmin) && (!item.userOnly || !isAdmin)
-  );
-
   return (
           <div className={`flex ${isMobile ? 'min-h-screen' : 'h-screen'} bg-transparent`}>
       {/* 移动端遮罩层 */}
@@ -354,23 +357,23 @@ export default function AdminLayout({
 
       {/* 左侧菜单栏 */}
       <aside className={`
-        ${isMobile ? 'fixed' : 'relative'} 
+        ${isMobile ? 'fixed' : 'relative'}
         ${isMobile && !mobileMenuVisible ? '-translate-x-full' : 'translate-x-0'}
-        ${isMobile ? 'w-64' : 'w-72'}
-        bg-white/70 dark:bg-black/40 backdrop-blur-xl
+        ${isMobile ? 'w-64' : sidebarCollapsed ? 'w-16' : 'w-64'}
+        bg-white
         shadow-lg
-        border-r border-gray-200 dark:border-gray-600
+        border-r border-gray-200
         z-50 
-        transition-transform duration-300 ease-in-out
+        transition-[width,transform] duration-200 ease-in-out
         flex flex-col
         ${isMobile ? 'h-screen' : 'h-full'}
         ${isMobile ? 'top-0 left-0' : ''}
       `}>
                  {/* Logo 区域 */}
-         <div className="px-3 py-3 h-14 flex items-center">
-           <div className="flex items-center gap-2 w-full">
+         <div className={`px-3 py-3 h-14 flex items-center ${sidebarCollapsed ? "justify-center" : ""}`}>
+           <div className={`flex items-center gap-2 w-full ${sidebarCollapsed ? "justify-center" : ""}`}>
              <Logo size={24} />
-             <div className="flex-1 min-w-0">
+             <div className={sidebarCollapsed ? "hidden" : "flex-1 min-w-0"}>
                <h1 className="text-sm font-bold text-foreground overflow-hidden whitespace-nowrap">{appName}</h1>
                <div className="flex items-center gap-1.5">
                  <p className="text-xs text-default-500">
@@ -396,48 +399,79 @@ export default function AdminLayout({
          </div>
 
                  {/* 菜单导航 */}
-         <nav className="flex-1 px-4 py-6 overflow-y-auto">
-           <ul className="space-y-1">
-            {filteredMenuItems.map((item) => {
-              const isActive = location.pathname === item.path;
+         <nav className="flex-1 px-3 py-5 overflow-y-auto">
+           <div className="space-y-3">
+            {visibleMenuGroups.map((group) => {
+              const groupExpanded = sidebarCollapsed || expandedGroups[group.id];
               return (
-                <li key={item.path}>
-                                     <button
-                     onClick={() => handleMenuClick(item.path)}
-                     className={`
-                       w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left
-                       transition-colors duration-200 min-h-[44px]
-                       ${isActive 
-                         ? 'bg-primary-100 dark:bg-primary-600/20 text-primary-600 dark:text-primary-300' 
-                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900'
-                       }
-                     `}
-                   >
-                     <div className="flex-shrink-0">
-                       {item.icon}
-                     </div>
-                     <span className="font-medium text-sm">{item.label}</span>
-                   </button>
-                </li>
+                <section key={group.id}>
+                  <button
+                    type="button"
+                    title={sidebarCollapsed ? group.label : undefined}
+                    aria-expanded={sidebarCollapsed ? undefined : groupExpanded}
+                    onClick={() => {
+                      if (!sidebarCollapsed) {
+                        setExpandedGroups((current) => ({ ...current, [group.id]: !current[group.id] }));
+                      }
+                    }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs font-semibold text-gray-500 hover:bg-gray-100 ${sidebarCollapsed ? 'justify-center cursor-default' : ''}`}
+                  >
+                    <UiIcon name={group.icon} size={16} />
+                    <span className={sidebarCollapsed ? 'sr-only' : ''}>{group.label}</span>
+                    {!sidebarCollapsed && (
+                      <UiIcon name={groupExpanded ? 'chevronDown' : 'chevronUp'} size={14} className="ml-auto" />
+                    )}
+                  </button>
+                  {groupExpanded && (
+                    <ul className="mt-1 space-y-1">
+                      {group.items.map((item) => {
+                        const isActive = location.pathname === item.path;
+                        return (
+                          <li key={item.path}>
+                            <button
+                              type="button"
+                              title={sidebarCollapsed ? item.label : undefined}
+                              onClick={() => handleMenuClick(item.path)}
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors duration-200 min-h-[44px] ${sidebarCollapsed ? 'justify-center' : 'pl-5'} ${isActive ? 'bg-primary-100 text-primary-700' : 'text-gray-900 hover:bg-gray-100'}`}
+                            >
+                              <div className="flex-shrink-0">{item.icon}</div>
+                              <span className={`font-medium text-sm ${sidebarCollapsed ? 'sr-only' : ''}`}>{item.label}</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
               );
             })}
-          </ul>
+          </div>
         </nav>
 
                 {/* 底部版权信息 */}
-        <div className="px-4 py-2 pb-4 mt-auto flex-shrink-0">
+        <div className={`${sidebarCollapsed ? 'hidden' : ''} px-4 py-2 pb-4 mt-auto flex-shrink-0`}>
           <div className="text-center">
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              Powered by <span className="text-gray-500 dark:text-gray-400">TMS</span>
+            <p className="text-xs text-gray-400">
+              Powered by <span className="text-gray-600">TMS</span>
             </p>
           </div>
         </div>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+          title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+          onPress={() => setSidebarCollapsed((collapsed) => !collapsed)}
+          className="absolute bottom-2 right-2 bg-[#10b8ad] text-white shadow-sm hover:bg-[#0e9f96]"
+        >
+          <UiIcon name={sidebarCollapsed ? "expand" : "collapse"} size={18} />
+        </Button>
       </aside>
 
       {/* 主内容区域 */}
       <div className={`flex flex-col flex-1 ${isMobile ? 'min-h-0' : 'h-full overflow-hidden'}`}>
                  {/* 顶部导航栏 */}
-         <header className="bg-white/60 dark:bg-black/30 backdrop-blur-xl shadow-md border-b border-gray-200 dark:border-gray-600 h-14 flex items-center justify-between px-4 lg:px-6 relative z-10">
+         <header className="bg-white shadow-md border-b border-gray-200 h-14 flex items-center justify-between px-4 lg:px-6 relative z-10">
           <div className="flex items-center gap-4">
             {/* 移动端菜单按钮 */}
             {isMobile && (
@@ -455,8 +489,6 @@ export default function AdminLayout({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* 主题选择 */}
-            <SkinPicker />
             {/* 用户菜单 */}
              <Dropdown placement="bottom-end">
                <DropdownTrigger>

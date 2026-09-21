@@ -24,6 +24,7 @@ import {
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { SNI_PRESETS, DEFAULT_SNI, cleanSni } from "@/config/sni";
 import { SubQr } from "@/components/sub-qr";
+import { UiIcon } from "@/components/ui-icon";
 
 /**
  * 中转(前置机协议 + 落地出口)· 机器卡模式。
@@ -228,7 +229,7 @@ export default function RelayPage() {
             setBuildOpen(true);
           }}
         >
-          ⚡ 搭中转
+          <><UiIcon name="zap" size={16} /> 搭中转</>
         </Button>
       </div>
 
@@ -248,7 +249,7 @@ export default function RelayPage() {
             <Card key={`${n.id}-${ln.landingId}`}>
               <CardBody className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-semibold truncate">🖥️ {n.name}</span>
+                  <span className="text-lg font-semibold truncate flex items-center gap-2"><UiIcon name="server" size={20} /> {n.name}</span>
                   <Chip size="sm" variant="flat" color={online ? "success" : "default"}>{online ? "在线" : "离线"}</Chip>
                   <Chip size="sm" variant="flat" color="primary" className="ml-auto">{ln.inbounds.length} 协议</Chip>
                 </div>
@@ -264,7 +265,7 @@ export default function RelayPage() {
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" color="primary" className="flex-1" onPress={() => openNodeAssign(n, ln.landingId, landingName, ln.inbounds.length)}>
-                    👤 分配用户
+                    <><UiIcon name="users" size={15} /> 分配用户</>
                   </Button>
                   {/* 自己用不必先建车友:一键开给当前管理员,不限速不限量不到期 */}
                   <Button
@@ -274,7 +275,7 @@ export default function RelayPage() {
                     isLoading={selfLoading === `${n.id}-${ln.landingId}`}
                     onPress={() => handleAssignSelf(n.id, ln.landingId, `${n.name} → ${landingName}`)}
                   >
-                    🔑 我自己用
+                    <><UiIcon name="key" size={15} /> 我自己用</>
                   </Button>
                   <Button size="sm" color="danger" variant="flat" onPress={() => handleClearNode(n.id, n.name, ln.landingId, landingName)}>
                     清空该条
@@ -287,7 +288,7 @@ export default function RelayPage() {
       </div>
       {relayLines.length === 0 && (
         <div className="text-center text-default-400 py-8">
-          还没有中转。点右上角「⚡ 搭中转」→ 选前置机 + 粘贴落地(住宅 socks 或协议链接)→ 测试通 → 搭建。
+          还没有中转。点右上角「搭中转」→ 选前置机 + 粘贴落地(住宅 socks 或协议链接)→ 测试通 → 搭建。
         </div>
       )}
 
@@ -295,7 +296,7 @@ export default function RelayPage() {
       <Modal isOpen={selfOpen} onClose={() => setSelfOpen(false)} size="2xl">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            <span>🔑 已开给你自己(不限速 · 不限流量 · 不限到期)</span>
+            <span className="flex items-center gap-2"><UiIcon name="key" size={18} /> 已开给你自己(不限速 · 不限流量 · 不限到期)</span>
             {selfLineName && (
               <span className="text-sm font-normal text-default-500">
                 线路:<b className="text-foreground">{selfLineName}</b>
@@ -307,7 +308,7 @@ export default function RelayPage() {
               这条中转订阅是给你自己用的,复制到客户端就能用,出口走落地。以后在「我的订阅」页也能找到。
             </div>
             <div className="text-xs text-default-400 bg-default-100 rounded-lg px-3 py-2">
-              💡 链接前半段是<b>面板地址</b>,所以每条线路点出来都一样 —— 真正区分线路的是末尾的
+              <UiIcon name="info" size={15} /> 链接前半段是<b>面板地址</b>,所以每条线路点出来都一样 —— 真正区分线路的是末尾的
               <b> token</b>。拉下来的节点才是这条线路的。
             </div>
             <Input
@@ -346,7 +347,7 @@ export default function RelayPage() {
       {/* 分配用户(复用协议管理的整机分配) */}
       <Modal isOpen={assignOpen} onClose={() => setAssignOpen(false)}>
         <ModalContent>
-          <ModalHeader>👤 中转分配「{assignForm.nodeName} → {assignForm.landingName}」</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="users" size={18} /> 中转分配「{assignForm.nodeName} → {assignForm.landingName}」</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-sm text-default-500">
               把这条中转的 <b>{assignForm.protocolCount} 个协议</b> 一次分给车友,出口走 {assignForm.landingName}。分配完到「用户管理」拿这条中转订阅链接。
@@ -398,7 +399,7 @@ export default function RelayPage() {
       {/* 搭中转:选前置机 + 内联填落地 + 测试 + 搭建 */}
       <Modal isOpen={buildOpen} onClose={() => setBuildOpen(false)} size="2xl">
         <ModalContent>
-          <ModalHeader>⚡ 搭中转</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="zap" size={18} /> 搭中转</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-sm text-default-500">
               选前置机 + 填落地出口 → 测试通了 → 搭建。前置机上建全套协议,流量经落地出网。
@@ -426,14 +427,14 @@ export default function RelayPage() {
               description="住宅 socks 直接填 IP:端口:账号:密码;机场/别人节点整条分享链接粘进来。测试会经前置机试连、显示出口 IP"
             />
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="flat" color="secondary" isLoading={testLoading} onPress={handleTest}>🔌 测试落地</Button>
+              <Button size="sm" variant="flat" color="secondary" isLoading={testLoading} onPress={handleTest}><UiIcon name="plug" size={15} /> 测试落地</Button>
               {testResult && (
                 testResult.skipped ? (
                   <span className="text-xs text-default-500">{testResult.msg}</span>
                 ) : testResult.ok ? (
-                  <span className="text-xs text-success">✅ 通了 · 出口 IP <b className="font-mono">{testResult.exitIp}</b> · {testResult.latencyMs}ms</span>
+                  <span className="text-xs text-success flex items-center gap-1"><UiIcon name="check" size={14} /> 通了 · 出口 IP <b className="font-mono">{testResult.exitIp}</b> · {testResult.latencyMs}ms</span>
                 ) : (
-                  <span className="text-xs text-danger">❌ {testResult.msg || "不通"}</span>
+                  <span className="text-xs text-danger flex items-center gap-1"><UiIcon name="x" size={14} /> {testResult.msg || "不通"}</span>
                 )
               )}
             </div>

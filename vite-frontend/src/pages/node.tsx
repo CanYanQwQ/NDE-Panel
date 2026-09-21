@@ -12,6 +12,7 @@ import { Progress } from "@heroui/progress";
 import toast from 'react-hot-toast';
 import { copyTextToClipboard } from "@/utils/clipboard";
 import axios from 'axios';
+import { UiIcon } from "@/components/ui-icon";
 
 
 import {
@@ -704,7 +705,7 @@ export default function NodePage() {
                   {node.connectionStatus === 'online' && (node.inboundCount || 0) > 0 && node.singboxRunning === false && (
                     node.singboxInstalling ? (
                       <div className="mb-3 rounded-lg border border-default-300 bg-default-100 px-2.5 py-2">
-                        <div className="text-xs font-medium text-default-600">⏳ sing-box 安装中</div>
+                        <div className="text-xs font-medium text-default-600 flex items-center gap-1"><UiIcon name="refresh" size={14} /> sing-box 安装中</div>
                         <div className="text-[11px] text-default-500 mt-0.5 leading-relaxed">
                           首次建协议时会现下约 57MB,一般 1-2 分钟,装好自动恢复。
                         </div>
@@ -712,7 +713,7 @@ export default function NodePage() {
                     ) : (
                       <div className="mb-3 rounded-lg border border-danger/40 bg-danger/10 px-2.5 py-2">
                         <div className="text-xs font-semibold text-danger">
-                          ⚠️ sing-box {node.singboxInstallErr ? '安装失败' : '未运行'}
+                          <span className="flex items-center gap-1"><UiIcon name="warning" size={14} /> sing-box {node.singboxInstallErr ? '安装失败' : '未运行'}</span>
                         </div>
                         <div className="text-[11px] text-default-500 mt-0.5 leading-relaxed">
                           {node.singboxInstallErr ? (
@@ -1164,7 +1165,7 @@ export default function NodePage() {
                   </Button>
                 </div>
                 <div className="text-xs text-default-500">
-                  💡 提示：如果复制按钮失效，请手动选择上方文本进行复制
+                  <span className="flex items-center gap-1"><UiIcon name="info" size={14} /> 提示：如果复制按钮失效，请手动选择上方文本进行复制</span>
                 </div>
               </div>
             </ModalBody>

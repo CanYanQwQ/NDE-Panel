@@ -8,6 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 
 import { getUserPackageInfo } from "@/api";
+import { UiIcon } from "@/components/ui-icon";
 
 interface UserInfo {
   flow: number;
@@ -95,13 +96,13 @@ export default function DashboardPage() {
           hasNotification = true;
           if (diffDays === 1) {
             toast('账户将于明天过期，请及时续费', { 
-              icon: '⚠️',
+              icon: <UiIcon name="warning" size={16} />,
               duration: 6000,
               style: { background: '#f59e0b', color: '#fff' }
             });
           } else {
             toast(`账户将于${diffDays}天后过期，请及时续费`, { 
-              icon: '⚠️',
+              icon: <UiIcon name="warning" size={16} />,
               duration: 6000,
               style: { background: '#f59e0b', color: '#fff' }
             });
@@ -109,7 +110,7 @@ export default function DashboardPage() {
         } else if (diffDays <= 0) {
           hasNotification = true;
           toast('账户已过期，请立即续费', { 
-            icon: '⚠️',
+            icon: <UiIcon name="warning" size={16} />,
             duration: 8000,
             style: { background: '#ef4444', color: '#fff' }
           });
@@ -131,13 +132,13 @@ export default function DashboardPage() {
             hasNotification = true;
             if (diffDays === 1) {
               toast(`隧道"${tunnel.tunnelName}"将于明天过期`, { 
-                icon: '⚠️',
+                icon: <UiIcon name="warning" size={16} />,
                 duration: 5000,
                 style: { background: '#f59e0b', color: '#fff' }
               });
             } else {
               toast(`隧道"${tunnel.tunnelName}"将于${diffDays}天后过期`, { 
-                icon: '⚠️',
+                icon: <UiIcon name="warning" size={16} />,
                 duration: 5000,
                 style: { background: '#f59e0b', color: '#fff' }
               });
@@ -145,7 +146,7 @@ export default function DashboardPage() {
           } else if (diffDays <= 0) {
             hasNotification = true;
             toast(`隧道"${tunnel.tunnelName}"已过期`, { 
-              icon: '⚠️',
+              icon: <UiIcon name="warning" size={16} />,
               duration: 6000,
               style: { background: '#ef4444', color: '#fff' }
             });
@@ -336,8 +337,8 @@ export default function DashboardPage() {
     if (isUnlimited) {
       return (
         <div className="w-full">
-          <div className={`w-full bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-500/30 dark:to-purple-500/30 rounded-full ${height}`}>
-            <div className={`${height} bg-gradient-to-r from-blue-500 to-purple-500 rounded-full w-full opacity-60`}></div>
+          <div className={`w-full bg-default-200 dark:bg-default-700 rounded-full ${height}`}>
+            <div className={`${height} bg-primary rounded-full w-full opacity-60`}></div>
           </div>
         </div>
       );
@@ -648,8 +649,8 @@ export default function DashboardPage() {
                <div className="flex flex-col space-y-2">
                  <div className="flex items-center justify-between">
                    <p className="text-xs lg:text-sm text-default-600 truncate">转发配额</p>
-                   <div className="p-1.5 lg:p-2 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex-shrink-0">
-                     <svg className="w-4 h-4 lg:w-5 lg:h-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                   <div className="p-1.5 lg:p-2 bg-teal-100 dark:bg-teal-500/20 rounded-lg flex-shrink-0">
+                     <svg className="w-4 h-4 lg:w-5 lg:h-5 text-teal-700 dark:text-teal-300" fill="currentColor" viewBox="0 0 20 20">
                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                      </svg>
                    </div>

@@ -108,7 +108,7 @@ export const getLandingList = () => Network.post("/landing/list");
 // 然后又要去指挥舱删不需要的协议」。后端 create/update/delete 一直都在,只是前端没接。
 export const createLanding = (data: { name: string; link: string; remark?: string }) =>
   Network.post("/landing/create", data);
-// ⚠️ update 成功时后端会把用到这条落地的机器全部重推一遍 sing-box 配置;
+// update 成功时后端会把用到这条落地的机器全部重推一遍 sing-box 配置;
 // 只要有一台没推上就返回 code!=0,但【库里已经改了】—— 调用方别当成「保存失败」。
 export const updateLanding = (data: { id: number; name: string; link: string; remark?: string }) =>
   Network.post("/landing/update", data);

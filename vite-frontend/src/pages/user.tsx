@@ -55,6 +55,7 @@ import {
 import { copyTextToClipboard } from '@/utils/clipboard';
 import { SubQrToggle } from '@/components/sub-qr';
 import { SearchIcon, EditIcon, DeleteIcon, UserIcon, SettingsIcon } from '@/components/icons';
+import { UiIcon } from "@/components/ui-icon";
 import { parseDate } from "@internationalized/date";
 
 
@@ -793,7 +794,7 @@ export default function UserPage() {
                         onPress={() => handleShowSub(user)}
                         className="flex-1 min-h-8"
                       >
-                        🔗 订阅链接
+                        <><UiIcon name="link" size={15} /> 订阅链接</>
                       </Button>
                     </div>
                   </div>
@@ -1528,7 +1529,7 @@ export default function UserPage() {
       {/* 订阅线路(合体面板:车友的每台机器一条订阅,直连/中转各一条) */}
       <Modal isOpen={isSubModalOpen} onClose={onSubModalClose} size="2xl" backdrop="blur" placement="center">
         <ModalContent>
-          <ModalHeader>🔗 {subUserName} 的订阅线路({subLines.length})</ModalHeader>
+          <ModalHeader className="flex items-center gap-2"><UiIcon name="link" size={18} /> {subUserName} 的订阅线路({subLines.length})</ModalHeader>
           <ModalBody className="space-y-3">
             <div className="text-small text-default-500">
               每台机器一条订阅(直连 / 中转各一条)。发对应的一条给车友:v2rayN → 订阅 → 添加 → 粘贴 → 更新。
@@ -1537,7 +1538,7 @@ export default function UserPage() {
             {subAllToken && subLines.length > 1 && (
               <div className="border border-primary/40 bg-primary/5 rounded-lg p-3 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Chip size="sm" color="primary" variant="flat">⭐ 全部线路</Chip>
+                  <Chip size="sm" color="primary" variant="flat"><span className="flex items-center gap-1"><UiIcon name="inbox" size={14} /> 全部线路</span></Chip>
                   <span className="text-sm">一条链接包含他所有线路,推荐发这条</span>
                   <Chip size="sm" variant="flat">
                     {subLines.reduce((n: number, l: any) => n + (l.protocolCount || 0), 0)} 协议
@@ -1587,7 +1588,7 @@ export default function UserPage() {
                 <div key={idx} className="border border-default-200 rounded-lg p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <Chip size="sm" variant="flat" color={isRelay ? 'warning' : 'primary'}>
-                      {isRelay ? `🔀 中转${ln.landingName ? '→' + ln.landingName : ''}` : '🖥️ 直连'}
+                      {isRelay ? <span className="flex items-center gap-1"><UiIcon name="relay" size={14} /> 中转{ln.landingName ? "→" + ln.landingName : ""}</span> : <span className="flex items-center gap-1"><UiIcon name="server" size={14} /> 直连</span>}
                     </Chip>
                     <span className="font-medium truncate">{ln.nodeName}</span>
                     <Chip size="sm" variant="flat">{ln.protocolCount} 协议</Chip>

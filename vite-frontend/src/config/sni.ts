@@ -4,10 +4,10 @@
  * 无域名搭 Reality 时,握手时对外表现成访问这个站点,所以要挑:
  * 国外大站、支持 TLS1.3+X25519、国内没被墙、且不在你机器所在地被劫持。
  *
- * ⚠️ 别用 www.microsoft.com —— 它启用了后量子密钥交换,Reality 握不上手,
+ * 别用 www.microsoft.com —— 它启用了后量子密钥交换,Reality 握不上手,
  *    搭完连不上十有八九栽在这(踩过)。
  *
- * ⚠️ label 必须【就是域名本身】,补充说明一律放 desc。
+ * label 必须【就是域名本身】,补充说明一律放 desc。
  *    HeroUI 的 Autocomplete 选中后会把输入框显示值设成 label 并触发
  *    onInputChange(label),把 onSelectionChange 刚写好的 value 覆盖掉;
  *    label 里但凡多一个字,存进配置的就是那串带说明的文字,

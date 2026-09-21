@@ -85,4 +85,32 @@ html, body {
   }
 }
 
-@config "../../tailwind.config.js"
+@config "../../tailwind.config.js";
+/* Flux light theme tokens: keep surfaces white, text dark, actions teal. */
+:root {
+  --flux-surface: #ffffff;
+  --flux-text: #111827;
+  --flux-action: #10b8ad;
+  --flux-action-hover: #0e9f96;
+}
+
+body {
+  background: var(--flux-surface);
+  color: var(--flux-text);
+}
+
+/* Reference action color: teal buttons with high-contrast white labels. */
+button[data-color="primary"],
+button[data-color="secondary"],
+button[data-color="success"] {
+  background-color: var(--flux-action) !important;
+  border-color: var(--flux-action) !important;
+  color: #ffffff !important;
+}
+
+button[data-color="primary"]:hover,
+button[data-color="secondary"]:hover,
+button[data-color="success"]:hover {
+  background-color: var(--flux-action-hover) !important;
+  border-color: var(--flux-action-hover) !important;
+}

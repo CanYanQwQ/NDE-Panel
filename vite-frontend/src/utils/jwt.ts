@@ -60,7 +60,14 @@ export function getUserIdFromToken(token: string): number | null {
  */
 export function getRoleIdFromToken(token: string): number | null {
   const payload = getPayloadFromToken(token);
-  return payload ? payload.role_id : null;
+  const roleId = payload?.role_id;
+  if (roleId !== undefined && roleId !== null && Number.isFinite(Number(roleId))) {
+    return Number(roleId);
+  }
+
+  // 登录时会同步保存 role_id，用于 token 角色字段缺失时保持前端导航一致。
+  const storedRoleId = typeof localStorage !== 'undefined' ? localStorage.getItem('role_id') : null;
+  return storedRoleId !== null && Number.isFinite(Number(storedRoleId)) ? Number(storedRoleId) : null;
 }
 
 /**

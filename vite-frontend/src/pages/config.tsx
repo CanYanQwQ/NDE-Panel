@@ -10,6 +10,7 @@ import { Select, SelectItem } from "@heroui/select";
 import toast from 'react-hot-toast';
 import { updateConfigs } from '@/api';
 import { SettingsIcon } from '@/components/icons';
+import { UiIcon, UiIconName } from '@/components/ui-icon';
 
 import { isAdmin } from '@/utils/auth';
 import { getCachedConfigs, clearConfigCache, updateSiteConfig } from '@/config/site';
@@ -42,6 +43,14 @@ interface ConfigItem {
   dependsValue?: string; // 依赖的配置项值
 }
 
+interface ConfigGroup {
+  id: string;
+  label: string;
+  description: string;
+  icon: UiIconName;
+  keys: string[];
+}
+
 // 留空时后端继续使用内置默认模板。这里的示例只作为编辑提示,
 // 管理员可以从它开始改 proxy-groups / rules / dns 等任意 Clash 字段。
 const CLASH_TEMPLATE_PLACEHOLDER = `mixed-port: 7890
@@ -53,13 +62,13 @@ external-controller: 127.0.0.1:9090
 # 节点由系统自动注入;可写 proxies: {{proxies}}
 # 代理组引用节点名: proxies: [{{proxy_names}}]
 proxy-groups:
-  - name: "🚀 节点选择"
+  - name: "节点选择"
     type: select
     proxies: [{{proxy_names}}]
 
 rules:
   - GEOIP,CN,DIRECT
-  - MATCH,🚀 节点选择`;
+  - MATCH,节点选择`;
 
 // 网站配置项定义
 const CONFIG_ITEMS: ConfigItem[] = [
@@ -127,6 +136,12 @@ const CONFIG_ITEMS: ConfigItem[] = [
   }
 ];
 
+const CONFIG_GROUPS: ConfigGroup[] = [
+  { id: 'basic', label: '基础设置', description: '面板地址和应用名称', icon: 'settings', keys: ['ip', 'app_name'] },
+  { id: 'security', label: '安全设置', description: '登录验证码和安全策略', icon: 'shield', keys: ['captcha_enabled', 'captcha_type'] },
+  { id: 'subscription', label: '订阅设置', description: 'Clash / Mihomo 订阅模板', icon: 'link', keys: ['clash_template'] },
+];
+
 // 初始化时从缓存读取配置，避免闪烁
 const getInitialConfigs = (): Record<string, string> => {
   if (typeof window === 'undefined') return {};
@@ -155,6 +170,7 @@ export default function ConfigPage() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [originalConfigs, setOriginalConfigs] = useState<Record<string, string>>(initialConfigs);
+  const [activeGroup, setActiveGroup] = useState('basic');
 
   // 权限检查
   useEffect(() => {
@@ -363,6 +379,10 @@ export default function ConfigPage() {
     }
   };
 
+  const visibleConfigItems = CONFIG_ITEMS.filter((item) =>
+    CONFIG_GROUPS.find((group) => group.id === activeGroup)?.keys.includes(item.key) && shouldShowItem(item)
+  );
+
   if (loading) {
     return (
       
@@ -386,6 +406,28 @@ export default function ConfigPage() {
             </p>
           </div>
         </div>
+
+        <nav className="mb-5 flex flex-wrap gap-2 border-b border-gray-200" role="tablist" aria-label="网站配置分类">
+          {CONFIG_GROUPS.map((group) => {
+            const isActive = activeGroup === group.id;
+            return (
+              <button
+                key={group.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveGroup(group.id)}
+                className={`flex items-center gap-2 rounded-t-lg border-b-2 px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'border-primary bg-primary-50 text-primary-700' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-900'}`}
+              >
+                <UiIcon name={group.icon} size={17} />
+                <span>
+                  <span className="block">{group.label}</span>
+                  <span className="hidden text-xs font-normal opacity-70 sm:block">{group.description}</span>
+                </span>
+              </button>
+            );
+          })}
+        </nav>
 
         <Card className="shadow-md">
           <CardHeader className="pb-4">
@@ -414,15 +456,9 @@ export default function ConfigPage() {
           <Divider />
 
           <CardBody className="space-y-6 pt-6">
-            {CONFIG_ITEMS.map((item, index) => {
-              // 检查配置项是否应该显示
-              if (!shouldShowItem(item)) {
-                return null;
-              }
-
-              // 计算是否是最后一个显示的项目（用于决定是否显示分隔线）
-              const remainingItems = CONFIG_ITEMS.slice(index + 1).filter(shouldShowItem);
-              const isLastItem = remainingItems.length === 0;
+            {visibleConfigItems.map((item, index) => {
+              // 当前分类只渲染自己的配置项
+              const isLastItem = index === visibleConfigItems.length - 1;
 
               return (
                 <div key={item.key} className="space-y-3">

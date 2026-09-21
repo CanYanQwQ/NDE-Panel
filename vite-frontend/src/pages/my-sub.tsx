@@ -9,6 +9,7 @@ import { isAdmin } from "@/utils/auth";
 import { JwtUtil } from "@/utils/jwt";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { SubQrToggle } from "@/components/sub-qr";
+import { UiIcon } from "@/components/ui-icon";
 
 /**
  * 我的订阅(车友视角)· 一条订阅 = 一个套餐。
@@ -68,7 +69,7 @@ export default function MySubPage() {
       {(accountDisabled || accountExpired) && (
         <Card className="border border-danger/40 bg-danger/5">
           <CardBody className="text-sm text-danger">
-            ⚠️ 你的账号{accountExpired ? "已到期" : "已被停用"},所有线路暂时不可用,请联系管理员。
+            <span className="flex items-center gap-1"><UiIcon name="warning" size={16} /> 你的账号{accountExpired ? "已到期" : "已被停用"},所有线路暂时不可用,请联系管理员。</span>
           </CardBody>
         </Card>
       )}
@@ -77,7 +78,7 @@ export default function MySubPage() {
         <Card className="border border-primary/40 bg-primary/5">
           <CardBody className="space-y-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <Chip size="sm" color="primary" variant="flat">⭐ 全部线路</Chip>
+              <Chip size="sm" color="primary" variant="flat"><span className="flex items-center gap-1"><UiIcon name="inbox" size={14} /> 全部线路</span></Chip>
               <span className="text-sm text-default-600">一条链接包含下面所有线路,推荐用这条</span>
               <Chip size="sm" variant="flat" className="ml-auto">
                 {lines.reduce((n: number, l: any) => n + (l.protocolCount || 0), 0)} 协议
@@ -133,7 +134,7 @@ export default function MySubPage() {
         <Card>
           <CardBody className="text-center text-default-400 py-8">
             还没有线路。管理员在「协议管理」或「中转」的机器卡上点「分配用户」给你开通;
-            如果你就是管理员、想自己用,点那张卡上的「🔑 我自己用」即可。
+            如果你就是管理员、想自己用,点那张卡上的「我自己用」即可。
           </CardBody>
         </Card>
       ) : (
@@ -152,7 +153,7 @@ export default function MySubPage() {
                   {/* 标题行:类型 + 机器 + 协议数 */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <Chip size="sm" variant="flat" color={isRelay ? "warning" : "primary"}>
-                      {isRelay ? `🔀 中转${ln.landingName ? "→" + ln.landingName : ""}` : "🖥️ 直连"}
+                      {isRelay ? <span className="flex items-center gap-1"><UiIcon name="relay" size={14} /> 中转{ln.landingName ? "→" + ln.landingName : ""}</span> : <span className="flex items-center gap-1"><UiIcon name="server" size={14} /> 直连</span>}
                     </Chip>
                     <span className="font-medium truncate">{ln.nodeName}</span>
                     {stopped && <Chip size="sm" color="danger" variant="flat">已停用</Chip>}

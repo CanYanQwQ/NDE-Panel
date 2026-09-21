@@ -13,6 +13,7 @@ import { Accordion, AccordionItem } from "@heroui/accordion";
 import { DatePicker } from "@heroui/date-picker";
 import { parseDate } from "@internationalized/date";
 import toast from 'react-hot-toast';
+import { UiIcon } from "@/components/ui-icon";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import {
   DndContext,
@@ -540,7 +541,7 @@ export default function ForwardPage() {
         loadData();
       } else {
         // 删除失败，询问是否强制删除
-        const confirmed = window.confirm(`常规删除失败：${res.msg || '删除失败'}\n\n是否需要强制删除？\n\n⚠️ 注意：强制删除不会去验证转发机端是否已经删除对应的转发服务。`);
+        const confirmed = window.confirm(`常规删除失败：${res.msg || '删除失败'}\n\n是否需要强制删除？\n\n注意：强制删除不会去验证转发机端是否已经删除对应的转发服务。`);
         if (confirmed) {
           const forceRes = await forceDeleteForward(forwardToDelete.id);
           if (forceRes.code === 0) {
@@ -763,12 +764,12 @@ export default function ForwardPage() {
   const getQualityDisplay = (averageTime?: number, packetLoss?: number) => {
     if (averageTime === undefined || packetLoss === undefined) return null;
     
-    if (averageTime < 30 && packetLoss === 0) return { text: '🚀 优秀', color: 'success' };
-    if (averageTime < 50 && packetLoss === 0) return { text: '✨ 很好', color: 'success' };
-    if (averageTime < 100 && packetLoss < 1) return { text: '👍 良好', color: 'primary' };
-    if (averageTime < 150 && packetLoss < 2) return { text: '😐 一般', color: 'warning' };
-    if (averageTime < 200 && packetLoss < 5) return { text: '😟 较差', color: 'warning' };
-    return { text: '😵 很差', color: 'danger' };
+    if (averageTime < 30 && packetLoss === 0) return { text: '优秀', icon: 'zap' as const, color: 'success' };
+    if (averageTime < 50 && packetLoss === 0) return { text: '很好', icon: 'check' as const, color: 'success' };
+    if (averageTime < 100 && packetLoss < 1) return { text: '良好', icon: 'info' as const, color: 'primary' };
+    if (averageTime < 150 && packetLoss < 2) return { text: '一般', icon: 'warning' as const, color: 'warning' };
+    if (averageTime < 200 && packetLoss < 5) return { text: '较差', icon: 'warning' as const, color: 'warning' };
+    return { text: '很差', icon: 'x' as const, color: 'danger' };
   };
 
   // 格式化流量
@@ -2319,7 +2320,7 @@ export default function ForwardPage() {
                                       {quality && (
                                         <>
                                           <Chip color={quality.color as any} variant="flat" size="lg">
-                                            {quality.text}
+                                            <span className="flex items-center gap-1"><UiIcon name={quality.icon} size={16} /> {quality.text}</span>
                                           </Chip>
                                           <div className="text-small text-default-500 mt-1">连接质量</div>
                                         </>

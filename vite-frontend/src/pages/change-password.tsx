@@ -1,3 +1,4 @@
+import { UiIcon } from "@/components/ui-icon";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Card, CardBody, CardHeader } from "@heroui/card";
@@ -188,7 +189,7 @@ export default function ChangePasswordPage() {
                 </Button>
                 
                 <div className="bg-warning-50 border border-warning-200 text-warning-700 px-3 py-2 rounded-lg text-sm text-center">
-                  ⚠️ 注意：修改账号密码后需要重新登录
+                  <span className="flex items-center gap-1"><UiIcon name="warning" size={15} /> 注意：修改账号密码后需要重新登录</span>
                 </div>
               </div>
             </CardBody>

@@ -1,6 +1,7 @@
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import { UiIcon, UiIconName } from "@/components/ui-icon";
 
 /**
  * 使用说明:四个功能(协议管理 / 中转 / 端口转发 / 隧道转发)啥区别、啥时候用哪个。
@@ -11,12 +12,12 @@ import { Accordion, AccordionItem } from "@heroui/accordion";
  */
 
 /** 四个功能的主色,全页统一:哪儿提到某个功能,颜色就是这个 */
-const FEATURES = [
+const FEATURES: Array<{ name: string; color: "primary" | "warning" | "secondary" | "default"; dot: string; icon: UiIconName; headline: string; body: string }> = [
   {
     name: "协议管理",
     color: "primary" as const,
     dot: "bg-primary",
-    icon: "🛡️",
+    icon: "shield",
     headline: "给车友卖翻墙 · 出口在本机",
     body: "搭 VLESS-Reality 等协议 → 出订阅给车友。出口就是搭协议的那台机器本身。",
   },
@@ -24,7 +25,7 @@ const FEATURES = [
     name: "中转",
     color: "warning" as const,
     dot: "bg-warning",
-    icon: "🔀",
+    icon: "relay",
     headline: "给车友卖翻墙 · 出口换成干净落地",
     body: "前置机搭协议,流量经落地(住宅 socks / 别人的节点)出网。前置机负责抗封锁,落地负责干净出口。",
   },
@@ -32,7 +33,7 @@ const FEATURES = [
     name: "端口转发",
     color: "secondary" as const,
     dot: "bg-secondary",
-    icon: "🔌",
+    icon: "plug",
     headline: "搬一个普通端口到任意地址 · 1 跳",
     body: "客户端拿到的是裸端口不是订阅。常用于救被墙的节点、给只认地址端口的服务换入口。",
   },
@@ -40,7 +41,7 @@ const FEATURES = [
     name: "隧道转发",
     color: "default" as const,
     dot: "bg-default-400",
-    icon: "🔒",
+    icon: "lock",
     headline: "两台机器之间走加密隧道 · 2 跳",
     body: "由后面那台去连目标。只在「境内入口 → 境外裸落地」时才需要,其它情况端口转发就够。",
   },
@@ -63,7 +64,7 @@ function Branch({
   color,
   children,
 }: {
-  tag: string;
+  tag: UiIconName;
   title: string;
   color: "primary" | "warning" | "secondary" | "default";
   children: React.ReactNode;
@@ -77,7 +78,7 @@ function Branch({
   return (
     <div className={`rounded-xl border ${ring} p-4 space-y-2 h-full`}>
       <div className="flex items-center gap-2">
-        <span className="text-lg">{tag}</span>
+        <UiIcon name={tag} size={20} />
         <span className="font-semibold text-sm">{title}</span>
       </div>
       <div className="text-sm text-default-600 space-y-2">{children}</div>
@@ -116,7 +117,7 @@ export default function GuidePage() {
             <Card key={f.name} className="border border-divider h-full">
               <CardBody className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{f.icon}</span>
+                  <UiIcon name={f.icon} size={22} />
                   <Chip size="sm" color={f.color} variant="flat" className="font-medium">
                     {f.name}
                   </Chip>
@@ -145,7 +146,7 @@ export default function GuidePage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Branch tag="📋" title="订阅 —— 给车友翻墙用" color="primary">
+                <Branch tag="clipboard" title="订阅 —— 给车友翻墙用" color="primary">
                   <div className="flex items-start gap-2">
                     <span className="text-default-400 shrink-0">·</span>
                     <span>出口就用这台机</span>
@@ -156,10 +157,10 @@ export default function GuidePage() {
                     <span>出口要换成住宅 IP 或别的节点</span>
                     <Chip size="sm" color="warning" variant="flat">中转</Chip>
                   </div>
-                  <div className="text-xs text-success pt-1">✓ 到这就完了,第二问不用看</div>
+                  <div className="text-xs text-success pt-1 flex items-center gap-1"><UiIcon name="check" size={14} /> 到这就完了,第二问不用看</div>
                 </Branch>
 
-                <Branch tag="🔌" title="一个端口 —— 自己用 / 搬服务" color="default">
+                <Branch tag="plug" title="一个端口 —— 自己用 / 搬服务" color="default">
                   <p>客户端不是翻墙客户端,拿到的是 IP:端口。</p>
                   <div className="text-xs text-default-500 pt-1">↓ 接着问第二句</div>
                 </Branch>
@@ -178,13 +179,13 @@ export default function GuidePage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Branch tag="🔒" title="自己加密" color="secondary">
+                <Branch tag="lock" title="自己加密" color="secondary">
                   <p className="text-xs text-default-500">VLESS / Trojan / SS / Hysteria 这些协议</p>
                   <p>搬的是密文,过不过墙都无所谓。落地那台什么都不用装,别人机场的节点也能搬。</p>
                   <Verdict name="端口转发" color="secondary" />
                 </Branch>
 
-                <Branch tag="📭" title="裸的" color="default">
+                <Branch tag="inbox" title="裸的" color="default">
                   <p className="text-xs text-default-500">socks5 / SSH / 游戏 / 数据库 / 明文服务</p>
                   <p className="font-medium">再看入口机到落地这一段过不过墙:</p>
 
@@ -267,7 +268,7 @@ export default function GuidePage() {
 
             <div className="text-xs text-default-500 space-y-2">
               <p>
-                <b>拿第一层的链接:</b>给它点「🔑 我自己用」拿到订阅地址,浏览器打开,把里面那条 vless://
+                <b>拿第一层的链接:</b>给它点「我自己用」拿到订阅地址,浏览器打开,把里面那条 vless://
                 复制出来,粘到第二层的落地框。
               </p>
               <p>
