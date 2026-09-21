@@ -109,12 +109,22 @@ curl -L https://ghfast.top/https://raw.githubusercontent.com/CanYanQwQ/NDE-Panel
 
 ## 本地源码部署
 
-用于开发和联调：
+用于开发和联调。项目当前没有提交 `.env.example`，请在 compose 文件同目录手动创建 `.env`：
+
+```dotenv
+DB_NAME=nde_panel
+DB_USER=nde_panel
+DB_PASSWORD=请替换为随机强密码
+JWT_SECRET=请替换为至少32字节的随机字符串
+BACKEND_PORT=6365
+FRONTEND_PORT=6366
+```
+
+然后执行：
 
 ```bash
 git clone https://github.com/CanYanQwQ/NDE-Panel.git
 cd NDE-Panel
-cp .env.example .env  # 如果项目提供该文件；否则按 compose 变量创建 .env
 docker compose -f docker-compose-hybrid.yml --env-file .env up -d --build
 ```
 
@@ -124,6 +134,31 @@ docker compose -f docker-compose-hybrid.yml --env-file .env up -d --build
 - `springboot-backend/`
 - `vite-frontend/`
 - `go-gost/`
+
+不要把 `.env`、数据库备份或服务器密钥提交到 Git。
+
+## 更新、备份与发布
+
+生产面板默认使用 `docker-compose-v4.yml` 拉取 GHCR 镜像；源码联调或本地构建使用 `docker-compose-hybrid.yml`。两种 compose 都使用固定容器名、网络名和 volume 名，同一台服务器不要同时运行两套面板。
+
+推荐的生产更新流程：
+
+```bash
+# 先导出备份
+tms export
+
+# 拉取并更新 backend/frontend，保留 MySQL volume
+tms update
+```
+
+`tms update` 会更新应用配置和镜像，并保留数据库 volume；不要用 `docker compose down -v` 代替更新。
+
+版本发布分为两类：
+
+- 面板镜像：推送 `main` 后由 `.github/workflows/docker-build.yml` 构建并推送 GHCR；
+- 节点二进制：推送 `gost-v*` 标签后由 `.github/workflows/release-gost.yml` 构建 amd64/arm64 并发布 GitHub Release，`install.sh` 使用 `releases/latest` 下载节点资产。
+
+修改 Java/Go 跨端协议时，应先完成构建验证，再发布对应节点版本，避免面板和节点协议不一致。
 
 ## 数据和安全更新
 
